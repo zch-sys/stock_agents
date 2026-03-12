@@ -1,0 +1,84 @@
+data_collector:
+  # Tushare Token（替换为你的实际Token）
+  tushare_token: "41bc8be1587c976380a7776cb3d0e74a563aecfbfa1bef98670eb601"
+  # PostgreSQL数据库连接URL（替换为你的实际配置）
+  db_url:  "postgresql://postgres:z2c2h088QQ@localhost:5432/stock_analysis"
+
+llm:
+  # DeepSeek 官方 API（用于对话和分析）
+  # 从 https://platform.deepseek.com/ 获取 API Key
+  api_key: "sk-bf46441e566e4130a93a029cb3c01fdf"
+  base_url: "https://api.deepseek.com"
+
+  models:
+    default: "deepseek-reasoner"           # 对话模型
+    analysis: "deepseek-reasoner"          # 分析模型
+  
+  embedding:
+    api_key: "sk-ezrvykaabgyiworepxxdihjlzaskgnscnmoubfkueuknxarv"
+    base_url: "https://api.siliconflow.cn/v1"
+    model: "Qwen/Qwen3-Embedding-8B"
+
+
+  # 默认参数
+  default_params:
+    temperature: 0.6
+    max_tokens: 4000
+  
+  # 核心分析参数 (重点！)
+  analysis_params:
+    temperature: 0.15               # 极低温度，保证交易逻辑的严谨性
+    max_tokens: 8000
+
+# 大盘/板块数据收集器配置
+market_collector:
+  # 默认监控的大盘指数（代码: 名称）
+  default_indices:
+    '000001.SH': '上证指数'
+    '399001.SZ': '深证成指'
+    '399006.SZ': '创业板指'
+  # 数据保留天数（超过则清理）
+  data_retention_days: 1200
+  # 首次收集天数（历史数据回溯天数）
+  initial_collect_days: 1200
+  # 板块聚合的最小股票数量（低于该值不生成板块数据）
+  min_stock_count: 50
+  # 单个行业的最小股票数量（低于该值跳过该行业）
+  min_industry_stocks: 2
+  # 涨跌幅合理范围（过滤异常值）
+  pct_chg_range: [-20, 20]
+  # API请求间隔（秒，避免触发限流）
+  request_interval: 0.1
+
+# 个股新闻爬虫配置（东方财富股吧）
+crawler:
+  time_range_days: 7          # 首次爬取时间范围（天）
+  page_load_timeout: 15
+  wait_time: 10
+  headless: false             # 无头模式
+  retention_days: 30         # 数据保留天数（新增）
+  
+  anti_scraping:
+    min_delay: 0.5            # 最小延迟（秒）
+    max_delay: 2.0            # 最大延迟（秒）
+    scroll_chance: 0.7        # 随机滚动概率
+    max_news_per_run: 50      # 单股票最大爬取数
+    batch_sleep: 5            # 批处理休息时间
+    batch_size: 5             # 每批处理条数
+
+# 大盘新闻爬虫配置（东方财富财经新闻）
+market_news_crawler:
+  page_load_timeout: 15
+  wait_time: 10
+  headless: True             # 无头模式
+  retention_days: 15           # 数据保留天数
+  initial_collect_days: 15     # 首次收集天数（历史新闻回溯）
+  
+  anti_scraping:
+    min_delay: 0.5            # 最小延迟（秒）
+    max_delay: 2.0            # 最大延迟（秒）
+    scroll_chance: 0.7        # 随机滚动概率
+    max_news_per_run: 50      # 单次最大爬取数
+    batch_sleep: 5            # 页间休息时间
+    batch_size: 5             # 每批处理条数
+

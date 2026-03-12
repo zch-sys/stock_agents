@@ -1,0 +1,163 @@
+agents:
+  market_analyst:
+    name: "大盘分析师"
+    description: "分析A股主要指数，评估市场环境和风险"
+    
+    llm:
+      model: "analysis"
+      temperature: 0.15
+      max_tokens: 8000
+    
+    memory:
+      short_term_days: 3
+      review_days: 10
+      retention_days: 20
+    
+    review:
+      validation_threshold: 0.5
+    
+    # 大盘分析参数
+    analysis:
+      technical:
+        support_resistance_days: 60
+        volume_trend_days: 20
+        volume_trend_lookback: 10
+      
+      capital:
+        margin_trend_days: 10
+        north_flow_days: 20
+        north_flow_lookback: 10
+      
+      valuation:
+        min_days: 100
+        max_days: 650
+        risk_free_rate: 0.0177
+      
+      cycle:
+        phase_days: 250
+        strength_days: 60
+        regime_days: 250
+      
+      sentiment:
+        normalization_days: 60
+        weights:
+          market_width: 0.20
+          adv_decline_ratio: 0.30
+          ad_line: 0.20
+          turnover_concentration: 0.30
+      
+      database:
+        query_days: 650
+        min_required_days: 100
+  
+
+  stock_analyst:
+    name: "个股分析师"
+    description: "分析个股基本面和技术面，提供投资建议"
+    
+    llm:
+      model: "analysis"
+      temperature: 0.15
+      max_tokens: 8000
+    
+    memory:
+      short_term_days: 3
+      review_days: 10
+      retention_days: 20
+
+  selection_analyst:
+    name: "选股分析师"
+    description: "基于大盘/板块分析报告，从股票池选出优质股票"
+    
+    llm:
+      model: "deepseek-reasoner"
+      temperature: 0.3
+      max_tokens: 4000
+    
+    memory:
+      enabled: false  # 选股分析师不需要保存短期记忆
+    
+    # 选股参数
+    selection:
+      max_iterations: 25              # ReAct循环最大迭代次数
+      candidate_pool_threshold: 25    # 候选池收集完成阈值
+      
+      # 多轮筛选参数
+      comparison:
+        batch_size: 5                 # 每轮比较的股票数量
+        select_size: 2                # 每轮选出的股票数量
+        final_threshold: 20           # 最终选股阈值（优选池<=此值时进行最终选股）
+        final_size: 10                # 最终选股数量
+      
+      # 重试参数
+      retry:
+        max_retries: 3               # 单支股票分析最大重试次数
+
+  sector_analyst:
+    name: "板块分析师"
+    description: "分析行业板块轮动，识别热点和机会"
+    
+    llm:
+      model: "analysis"
+      temperature: 0.15
+      max_tokens: 6000
+    
+    memory:
+      short_term_days: 3
+      review_days: 10
+      retention_days: 20
+    
+    # 板块筛选参数
+    analysis:
+      filter:
+        hot_sectors_top_n: 10          # 热门板块筛选数量（涨幅排名TOP N）
+        risk_sectors_bottom_n: 10      # 风险板块筛选数量（跌幅排名BOTTOM N）
+        capital_flow_top_n: 10         # 资金流入筛选数量（净流入TOP N）
+        continuous_strong_days: 3      # 连续强势最小天数
+        continuous_strong_rank: 20     # 连续强势排名阈值（排名<=此值视为强势）
+      
+      threshold:
+        min_amount: 1000000000         # 最小成交额（10亿）- 过滤冷门板块
+        min_circ_mv: 50000000000       # 最小流通市值（500亿）- 过滤小市值板块
+        strong_pct_chg: 2.0            # 强势板块涨跌幅阈值（%）
+        weak_pct_chg: -2.0             # 弱势板块涨跌幅阈值（%）
+      
+      # 资金流入综合评分权重
+      capital_score:
+        inflow_to_amount_weight: 0.5   # 流入占成交额比例的权重
+        inflow_rate_weight: 0.5        # 流入率的权重
+      
+      leading_stocks_top_n: 3          # 领涨股提取数量
+      history_days: 5                  # 历史数据天数（用于连续性分析）
+
+default_settings:
+  llm:
+    model: "default"
+    temperature: 0.3
+    max_tokens: 4096
+    timeout: 60.0
+    max_retries: 3
+  
+  memory:
+    short_term_days: 3
+    review_days: 10
+    retention_days: 20
+    embedding_model: "Qwen/Qwen3-Embedding-8B"
+    distance_threshold: 0.25
+    top_k: 5
+  
+  review:
+    system_prompt: "你是一位专业的投资复盘分析师。"
+    validation_threshold: 0.5
+  
+  tools:
+    tushare:
+      default_timeout: 30.0
+      long_timeout: 60.0
+      extended_timeout: 120.0
+    technical:
+      ma_periods: [5, 10, 20, 60]
+      macd_fast: 12
+      macd_slow: 26
+      macd_signal: 9
+      adx_period: 14

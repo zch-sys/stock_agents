@@ -1,0 +1,235 @@
+update_date: '2026-02-28'
+update_time: '2026-02-28 15:26:51'
+term: long_term
+factor_count: 16
+factors:
+- factor_name: momentum_20d
+  windows:
+  - 60
+  - 120
+  window_stats:
+    60:
+      ic_mean: -0.06301369605496983
+      ic_std: 0.0690668058476669
+      ir: -0.9123586255596102
+      hit_rate: 0.20689655172413793
+      n_days: 29
+- factor_name: quality_score
+  windows:
+  - 60
+  - 120
+  window_stats:
+    120:
+      ic_mean: -0.0670172484471619
+      ic_std: 0.07977061123941229
+      ir: -0.840124544690096
+      hit_rate: 0.16666666666666666
+      n_days: 12
+- factor_name: hsrs_residual_vol
+  windows:
+  - 60
+  - 120
+  window_stats:
+    120:
+      ic_mean: -0.06686963703254552
+      ic_std: 0.07006101956284451
+      ir: -0.9544485285796286
+      hit_rate: 0.16666666666666666
+      n_days: 12
+- factor_name: volatility_60d
+  windows:
+  - 60
+  - 120
+  window_stats:
+    60:
+      ic_mean: -0.08181649748246485
+      ic_std: 0.0958068991638655
+      ir: -0.8539729204942552
+      hit_rate: 0.2413793103448276
+      n_days: 29
+    120:
+      ic_mean: -0.09811323238602049
+      ic_std: 0.06436770319039156
+      ir: -1.5242618195621165
+      hit_rate: 0.08333333333333333
+      n_days: 12
+- factor_name: channel_strength_60d
+  windows:
+  - 60
+  - 120
+  window_stats:
+    60:
+      ic_mean: -0.06900510331413696
+      ic_std: 0.08373865816064616
+      ir: -0.8240531294608996
+      hit_rate: 0.1724137931034483
+      n_days: 29
+- factor_name: hl_beta_60d
+  windows:
+  - 60
+  - 120
+  window_stats:
+    60:
+      ic_mean: -0.0610347138606506
+      ic_std: 0.09510485702169712
+      ir: -0.6417623218415249
+      hit_rate: 0.1724137931034483
+      n_days: 29
+    120:
+      ic_mean: -0.07113346374632733
+      ic_std: 0.0994926872935466
+      ir: -0.714961729161589
+      hit_rate: 0.16666666666666666
+      n_days: 12
+- factor_name: momentum_60d
+  windows:
+  - 60
+  - 120
+  window_stats:
+    60:
+      ic_mean: -0.07012738553888272
+      ic_std: 0.07367172596650973
+      ir: -0.9518900856315186
+      hit_rate: 0.2413793103448276
+      n_days: 29
+    120:
+      ic_mean: -0.06848058892197699
+      ic_std: 0.06002862303531409
+      ir: -1.1407989298986705
+      hit_rate: 0.08333333333333333
+      n_days: 12
+- factor_name: asymmetry_beta
+  windows:
+  - 60
+  - 120
+  window_stats:
+    60:
+      ic_mean: -0.06092039684727052
+      ic_std: 0.08572840781132686
+      ir: -0.710620882885701
+      hit_rate: 0.2413793103448276
+      n_days: 29
+- factor_name: volatility_20d
+  windows:
+  - 60
+  - 120
+  window_stats:
+    60:
+      ic_mean: -0.08485111578685876
+      ic_std: 0.09479354030323767
+      ir: -0.8951149573634046
+      hit_rate: 0.1724137931034483
+      n_days: 29
+    120:
+      ic_mean: -0.09123239710256759
+      ic_std: 0.05660598092591071
+      ir: -1.6117094980118443
+      hit_rate: 0.08333333333333333
+      n_days: 12
+- factor_name: bp
+  windows:
+  - 60
+  - 120
+  window_stats:
+    60:
+      ic_mean: 0.07085133157181606
+      ic_std: 0.0397735219764454
+      ir: 1.7813693143336788
+      hit_rate: 0.9655172413793104
+      n_days: 29
+    120:
+      ic_mean: 0.07614535075796967
+      ic_std: 0.03198068628232932
+      ir: 2.3809792599742674
+      hit_rate: 1.0
+      n_days: 12
+- factor_name: high_low_ratio
+  windows:
+  - 60
+  - 120
+  window_stats:
+    60:
+      ic_mean: -0.06380470705456633
+      ic_std: 0.08110162889942249
+      ir: -0.7867253459692308
+      hit_rate: 0.1724137931034483
+      n_days: 29
+    120:
+      ic_mean: -0.07705389012648983
+      ic_std: 0.045323097887426805
+      ir: -1.7001020168099663
+      hit_rate: 0.08333333333333333
+      n_days: 12
+- factor_name: trend_structure_coef
+  windows:
+  - 60
+  - 120
+  window_stats:
+    60:
+      ic_mean: -0.06363240665136387
+      ic_std: 0.07186891610175623
+      ir: -0.8853953851379833
+      hit_rate: 0.1724137931034483
+      n_days: 29
+- factor_name: price_volume_strength
+  windows:
+  - 60
+  - 120
+  window_stats:
+    60:
+      ic_mean: -0.061927237870151794
+      ic_std: 0.044444597930541355
+      ir: -1.3933580402039536
+      hit_rate: 0.10344827586206896
+      n_days: 29
+    120:
+      ic_mean: -0.0684364965732844
+      ic_std: 0.036679025467577446
+      ir: -1.8658210162584359
+      hit_rate: 0.0
+      n_days: 12
+- factor_name: vrrs_20d
+  windows:
+  - 60
+  - 120
+  window_stats:
+    120:
+      ic_mean: 0.06582028676795744
+      ic_std: 0.06658769965455474
+      ir: 0.9884751554629683
+      hit_rate: 0.75
+      n_days: 12
+- factor_name: volatility_5d
+  windows:
+  - 60
+  - 120
+  window_stats:
+    60:
+      ic_mean: -0.07269271371244457
+      ic_std: 0.0840034178997142
+      ir: -0.8653542383147708
+      hit_rate: 0.20689655172413793
+      n_days: 29
+    120:
+      ic_mean: -0.07999096431101468
+      ic_std: 0.05008796535815996
+      ir: -1.5970096556933342
+      hit_rate: 0.08333333333333333
+      n_days: 12
+- factor_name: momentum_120d
+  windows:
+  - 60
+  - 120
+  window_stats:
+    60:
+      ic_mean: -0.08963811181366264
+      ic_std: 0.07929217615796338
+      ir: -1.130478644388425
+      hit_rate: 0.10344827586206896
+      n_days: 29
+    120:
+      ic_mean: -0.09215371419265228
+      ic_std: 0.050462575810158436
+      ir: -1.8261793559515676
+      hit_rate: 0.0
+      n_days: 12

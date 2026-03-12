@@ -1,0 +1,512 @@
+# ============================================================
+# 因子计算引擎配置文件
+# ============================================================
+
+# 数据库配置
+database:
+  # 数据库连接URL，支持 PostgreSQL / SQLite
+  db_url: "postgresql://postgres:z2c2h088QQ@localhost:5432/stock_analysis"
+  # 批量读取数据的块大小
+  chunk_size: 50000
+
+# 预处理参数
+preprocess:
+  # 缩尾处理的分位数边界 [下界, 上界]
+  winsorize_limit: [0.025, 0.975]
+  # 新股上市天数阈值，低于此值的新股将被过滤
+  list_day_threshold: 120
+  # 缺失值前向填充的最大天数
+  fill_limit: 5
+  # 相关性阈值（用于因子筛选）
+  corr_threshold: 0.8
+
+# 计算窗口配置
+windows:
+  # 收益率计算窗口（天数）
+  return_windows: [1, 3, 5, 10, 20, 60, 120]
+  # 波动率计算窗口（天数）
+  volatility_windows: [5, 10, 20, 60, 120]
+  # 动量因子后缀
+  momentum_suffixes: ["5d", "20d", "60d", "120d"]
+  # 反转因子后缀
+  reversal_suffixes: ["1d", "5d", "120d"]
+
+# 常量参数
+constants:
+  # 数值计算精度（防止除零）
+  eps: 1.0e-12
+  # 分组计算时的最小有效股票数
+  min_valid_stocks: 20
+  # 大盘数据保留的最大天数
+  max_market_dates: 1200
+
+# 增量计算配置
+incremental:
+  # 增量计算的最大日期间隔（天数），超过此值触发全量计算
+  max_days_gap: 10
+
+# 表结构定义
+table_columns:
+  stock:
+    - ts_code
+    - trade_date
+    - name
+    - open
+    - close
+    - high
+    - low
+    - pct_chg
+    - vol
+    - amount
+    - pre_close
+    - ma5
+    - ma10
+    - ma20
+    - ma60
+    - macd
+    - macd_signal
+    - macd_hist
+    - rsi6
+    - rsi12
+    - rsi24
+    - boll_upper
+    - boll_middle
+    - boll_lower
+    - industry
+    - area
+    - market
+    - list_date
+    - pe
+    - pb
+    - ps
+    - total_mv
+    - circ_mv
+    - dv_ttm
+    - total_assets
+    - total_liab
+    - net_profit
+    - revenue
+    - debt_to_assets
+    - current_ratio
+    - quick_ratio
+    - cash_ratio
+    - revenue_yoy
+    - profit_yoy
+
+  sector:
+    - sector_code
+    - sector_name
+    - trade_date
+    - open
+    - close
+    - high
+    - low
+    - pct_chg
+    - vol
+    - amount
+    - total_market_cap
+    - circ_market_cap
+    - rank
+    - stock_count
+    - rise_count
+    - fall_count
+    - rise_fall_ratio
+    - fund_inflow
+    - fund_inflow_rate
+    - avg_pct_chg
+
+  market:
+    - ts_code
+    - trade_date
+    - open
+    - close
+    - high
+    - low
+    - pct_chg
+    - vol
+    - amount
+    - ma5
+    - ma10
+    - ma20
+    - macd
+    - macd_signal
+    - macd_hist
+    - adx
+    - north_money_total
+    - margin_balance
+    - margin_buy
+    - short_balance
+    - adv_issues
+    - dec_issues
+    - adv_decline_ratio
+    - market_width
+    - ad_line
+    - turnover_concentration
+    - pe
+    - pb
+
+# 因子分类定义
+factor_categories:
+  # 时序因子（所有新增因子都用时序填充）
+  time_series_factors:
+    # ----- 原有时序因子 -----
+    - price_volume_divergence
+    - price_volume_strength
+    - volatility_5d
+    - volatility_10d
+    - volatility_20d
+    - volatility_60d
+    - volatility_120d
+    - return_120d
+    - simple_return_120d
+    - momentum_120d
+    # ----- 新增趋势因子 -----
+    - bias_20d
+    - donchian_breakout
+    - macd_slope
+    - hurst_exp
+    - adam_symmetry
+    # ----- 新增量价因子 -----
+    - vmom_20d
+    - vp_coordination
+    # ----- 新增波动因子 -----
+    - downside_vol_20d
+    # ----- 新增高低价回归因子 -----
+    - vrrs_20d
+    - hsrs_beta
+    - hsrs_residual_vol
+    - channel_strength
+    - hl_beta_20d
+    - hl_correlation_20d
+    - range_extension
+    - asymmetry_beta
+    # ----- 新增多维回归因子 -----
+    - ohlc_structure
+    - trend_structure_coef
+    # ----- 新增中长期因子 -----
+    - vrrs_60d
+    - hl_beta_60d
+    - channel_strength_60d
+    - long_term_channel_beta
+
+  # 估值因子
+  valuation_factors:
+    - ep
+    - bp
+    - sp
+    - value_score
+    - pe_industry_rank
+    - pb_industry_rank
+
+  # 无需缩尾的因子（极值本身是因子的核心判断依据）
+  no_winsorize_factors:
+    - donchian_breakout       # 0-1区间值，本身就是位置
+    - hurst_exp               # 0-1区间值，长程记忆性指数
+    - adam_symmetry           # 对称性评分，极端值有意义
+    - hl_beta_20d             # Beta值，极端值代表趋势强度
+    - hl_correlation_20d      # 相关系数，-1到1之间
+    - hl_beta_60d             # 长期Beta，极端值有意义
+    - price_position          # 0-1区间值
+    - boll_position           # 布林带位置
+    - vp_coordination         # -1到1之间
+    - ohlc_structure          # K线结构因子
+
+  # 需要中性化的因子（仅添加受市值影响大的因子）
+  neutralize_factors:
+    - return_1d
+    - return_3d
+    - return_5d
+    - return_10d
+    - return_20d
+    - return_60d
+    - return_120d
+    - simple_return_1d
+    - simple_return_3d
+    - simple_return_5d
+    - simple_return_10d
+    - simple_return_20d
+    - simple_return_60d
+    - simple_return_120d
+    - momentum_5d
+    - momentum_20d
+    - momentum_60d
+    - momentum_120d
+    - momentum_acceleration
+    - reversal_1d
+    - reversal_5d
+    - reversal_120d
+    - volatility_5d
+    - volatility_10d
+    - volatility_20d
+    - volatility_60d
+    - volatility_120d
+    - volatility_change
+    - volatility_long_term_dev
+    - low_volatility
+    - overnight_return
+    - overnight_momentum
+    - open_gap
+    - gap_ratio
+    - intraday_return
+    - intraday_strength
+    - high_low_ratio
+    - price_position
+    - volume_relative_strength
+    - price_volume_divergence
+    - price_volume_strength
+    - ma5_slope
+    - ma10_slope
+    - ma_slope_diff
+    - amount_concentration
+    - volatility_anomaly
+    - ep
+    - bp
+    - sp
+    - revenue_growth
+    - profit_growth
+    - roe
+    - profit_margin
+    - leverage
+    - current_ratio_safe
+    - rsi6_position
+    - macd_signal_diff
+    - boll_position
+    - volume_ratio
+    - amount_ratio
+    # ----- 新增需中性化因子（受市值影响大）-----
+    - vmom_20d
+    - vp_coordination
+    - downside_vol_20d
+
+# ============================================================
+# 因子筛选配置
+# ============================================================
+factor_selection:
+  # 非因子字段（基础标识字段，筛选时排除）
+  non_factor_cols:
+    - ts_code
+    - trade_date
+    - name
+    - open
+    - close
+    - high
+    - low
+    - pct_chg
+    - vol
+    - amount
+    - pre_close
+    - ma5
+    - ma10
+    - ma20
+    - ma60
+    - macd
+    - macd_signal
+    - macd_hist
+    - rsi6
+    - rsi12
+    - rsi24
+    - boll_upper
+    - boll_middle
+    - boll_lower
+    - industry
+    - area
+    - market
+    - list_date
+    - pe
+    - pb
+    - ps
+    - total_mv
+    - circ_mv
+    - dv_ttm
+    - total_assets
+    - total_liab
+    - net_profit
+    - revenue
+    - debt_to_assets
+    - current_ratio
+    - quick_ratio
+    - cash_ratio
+    - revenue_yoy
+    - profit_yoy
+
+    # ----- 板块/大盘派生列 -----
+    - sector_pct_chg
+    - sector_amount
+    - market_pct_chg
+    - market_amount
+    - market_north_money_total
+
+    # ----- 辅助计算列 -----
+    - log_circ_mv
+    - log_total_mv
+    - pe_safe
+    - pb_safe
+    - ps_safe
+
+    # ----- 排名结果列 (构建结果，不应再次预处理) -----
+    - size_factor
+    - small_cap_premium
+
+    # ----- 全局影响因子 (旧版也排除) -----
+    - north_flow_impact
+
+    # ----- 数据库元数据 -----
+    - id
+    - updated_at
+
+
+  # 筛选计算的最小有效股票数
+  min_valid_stocks: 20
+
+  # 数值计算精度
+  eps: 1.0e-6
+
+  # 短期因子筛选配置
+  short_term:
+    # 预测窗口（天数）
+    windows: [1, 3, 5]
+    # 数据回看天数
+    lookback_days: 180
+    # 更新阈值（超过此天数需重新筛选）
+    update_threshold_days: 30
+    # 筛选标准
+    min_ic_mean: 0.026
+    min_ir: 0.42
+    min_hit_rate: 0.53
+    min_valid_days: 30
+
+  # 中期因子筛选配置
+  medium_term:
+    # 预测窗口（天数）
+    windows: [20, 30]
+    # 数据回看天数
+    lookback_days: 300
+    # 更新阈值（超过此天数需重新筛选）
+    update_threshold_days: 90
+    # 筛选标准
+    min_ic_mean: 0.045
+    min_ir: 0.45
+    min_hit_rate: 0.58
+    min_valid_days: 6
+
+  # 长期因子筛选配置
+  long_term:
+    # 预测窗口（天数）
+    windows: [60, 120]
+    # 数据回看天数
+    lookback_days: 600
+    # 更新阈值（超过此天数需重新筛选）
+    update_threshold_days: 250
+    # 筛选标准
+    min_ic_mean: 0.06
+    min_ir: 0.6
+    min_hit_rate: 0.60
+    min_valid_days: 3
+
+  # 输出文件配置
+  output:
+    # 配置文件输出目录（相对于项目根目录）
+    config_dir: "config"
+    # 短期因子配置文件名
+    short_term_file: "short_factor.yaml"
+    # 中期因子配置文件名
+    medium_term_file: "medium_factor.yaml"
+    # 长期因子配置文件名
+    long_term_file: "long_factor.yaml"
+
+# ============================================================
+# 股票筛选配置
+# ============================================================
+stock_selection:
+  # Tushare API Token（用于获取沪深300数据）
+  tushare_token: "41bc8be1587c976380a7776cb3d0e74a563aecfbfa1bef98670eb601"
+  
+  # 选股数量
+  top_n: 100
+  
+  # 各周期训练窗口（交易日）
+  train_windows:
+    short_term: 15      # 短期训练窗口
+    medium_term: 150    # 中期训练窗口
+    long_term: 300      # 长期训练窗口
+  
+  # 各周期预测标签窗口（天数）
+  label_horizons:
+    short_term: 5       # 短期预测未来5天收益
+    medium_term: 30     # 中期预测未来30天收益
+    long_term: 120      # 长期预测未来120天收益
+  
+  # 各周期因子有效期（天数）
+  factor_validity_days:
+    short_term: 30      # 短期因子有效期30天
+    medium_term: 120    # 中期因子有效期120天
+    long_term: 250      # 长期因子有效期250天
+  
+  # 各周期股票池有效期（天数）
+  stock_validity_days:
+    short_term: 7       # 短期股票池有效期5天
+    medium_term: 30     # 中期股票池有效期30天
+    long_term: 180      # 长期股票池有效期180天
+  
+  # 模型配置
+  model:
+    short_term: "ensemble"  # 短期使用集成模型
+    medium_term: "ridge"    # 中期使用岭回归
+    long_term: "ridge"      # 长期使用岭回归
+  
+  # 因子配置文件路径（与factor_selection.output保持一致）
+  factor_config:
+    config_dir: "config"
+    short_term_file: "short_factor.yaml"
+    medium_term_file: "medium_factor.yaml"
+    long_term_file: "long_factor.yaml"
+
+white_horse_selection: 
+  # 选股数量
+  "top_n": 100
+  
+  # 股票池有效期（天数）- 一年更新一次
+  "validity_days": 365
+  
+  # 筛选条件
+  "criteria": 
+      # 股息率筛选
+      "min_dv_ttm": 2.5              # 最低股息率%（TTM）
+      "good_dv_ttm": 3.0             # 优秀股息率%
+      "excellent_dv_ttm": 4.0        # 卓越股息率%
+      
+      # 市值筛选
+      "min_total_mv": 200            # 最低总市值（亿元）
+      "large_cap_mv": 1000           # 大盘股市值（亿元）
+      "super_cap_mv": 2000          # 超大盘市值（亿元）
+      
+      # 盈利能力
+      "min_roe": 8.0                # 最低ROE%
+      "good_roe": 15.0               # 优秀ROE%
+      "excellent_roe": 20.0          # 卓越ROE%
+      
+      # 财务稳健
+      "max_debt_ratio": 75.0         # 最高资产负债率%
+      "good_debt_ratio": 60.0        # 良好资产负债率%
+      
+      # 估值区间
+      "min_pe": 0                    # 最低PE（排除负值）
+      "max_pe": 40                  # 最高PE
+      "good_pe_max": 30              # 良好PE上限
+      
+      # 增长要求
+      "min_revenue_yoy": -10.0       # 最低营收增长率%（允许小幅下滑）
+      "min_profit_yoy": -10.0        # 最低利润增长率%
+  
+  
+  # 评分权重配置
+  "scoring_weights": 
+      "dividend": 25          # 股息率得分权重
+      "market_cap": 15        # 市值得分权重
+      "profitability": 25     # 盈利能力得分权重
+      "financial": 15         # 财务稳健得分权重
+      "valuation": 10         # 估值吸引力得分权重
+      "growth": 10            # 成长性得分权重
+      "leader_bonus": 5       # 行业龙头加分
+            
+      
