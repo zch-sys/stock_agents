@@ -1,13 +1,13 @@
 data_collector:
   # Tushare Token（替换为你的实际Token）
-  tushare_token: "41bc8be1587c976380a7776cb3d0e74a563aecfbfa1bef98670eb601"
+  tushare_token: ""
   # PostgreSQL数据库连接URL（替换为你的实际配置）
-  db_url:  "postgresql://postgres:z2c2h088QQ@localhost:5432/stock_analysis"
+  db_url:  ""
 
 llm:
   # DeepSeek 官方 API（用于对话和分析）
   # 从 https://platform.deepseek.com/ 获取 API Key
-  api_key: "sk-bf46441e566e4130a93a029cb3c01fdf"
+  api_key: ""
   base_url: "https://api.deepseek.com"
 
   models:
@@ -15,7 +15,7 @@ llm:
     analysis: "deepseek-reasoner"          # 分析模型
   
   embedding:
-    api_key: "sk-ezrvykaabgyiworepxxdihjlzaskgnscnmoubfkueuknxarv"
+    api_key: ""
     base_url: "https://api.siliconflow.cn/v1"
     model: "Qwen/Qwen3-Embedding-8B"
 
